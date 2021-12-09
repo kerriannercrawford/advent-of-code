@@ -48,10 +48,15 @@ for (let i = 0; i < positions.length; i += 1) {
 
 	possiblePositions.forEach(position => {
 		const cost = Math.abs(position - currentPosition);
-		fuelCost[position] = fuelCost[position] + cost;
+		let totalCost = 0;
+		for (let i = 1; i <= cost; i += 1) {
+			totalCost = totalCost + i;
+		}
+
+		fuelCost[position] = fuelCost[position] + totalCost;
 	})
 }
 
 const finalPositions = Object.values(fuelCost);
-
+// console.log(finalPositions)
 console.log(Math.min(...finalPositions))
