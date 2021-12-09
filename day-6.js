@@ -52,31 +52,35 @@
 const fs = require('fs');
 
 const getLanternFish = async () => {
-	const rawLanternFish = await fs.promises.readFile('data/lantern-fish');
-	const lanternFish = rawLanternFish.toString().split(',');
-	// const lanternFish = [3, 4, 3, 1, 2];
-
 	let currentDay = 0;
-	let currentFish = [ ...lanternFish ];
-
-	while (currentDay < 80) {
-		const initialFish = [ ...currentFish ];
-		let newFish = 0;
-		currentFish = [];
-		initialFish.forEach(fish => {
-			let updatedFish = fish - 1;
-			if (updatedFish < 0) {
-				updatedFish = 6;
-				newFish += 1;
-			}
-			currentFish.push(updatedFish);
-		});
-		currentDay += 1;
-		for (let i = 0; i < newFish; i += 1) {
-			currentFish.push(8)
-		}
+	let lanternFish = {};
+	// const rawLanternFish = [3, 4, 3, 1, 2];
+	const data = await fs.promises.readFile('data/lantern-fish')
+	const rawLanternFish = data.toString().split(',');
+	for (let i = 0; i < rawLanternFish.length; i += 1) {
+		lanternFish[rawLanternFish[i]] = lanternFish[rawLanternFish[i]] ? lanternFish[rawLanternFish[i]] += 1 : 1;
 	}
-	console.log(currentFish.length)
+
+	while (currentDay < 256) {
+		const newLanternFish = {};
+		const fishTimers = Object.keys(lanternFish);
+		fishTimers.forEach(fish => {
+			if (fish == 0) {
+				newLanternFish[8] = lanternFish[fish];
+				newLanternFish[6] = lanternFish[fish];
+			} else {
+				newLanternFish[fish - 1] = newLanternFish[fish - 1] ? newLanternFish[fish - 1] + lanternFish[fish] : lanternFish[fish];
+			}
+		})
+		lanternFish = newLanternFish;
+		currentDay += 1;
+	}
+
+	const finalTimers = Object.values(lanternFish).reduce((sum, currentValue) => {
+		return sum + currentValue;
+	}, 0);
+
+	console.log(finalTimers)
 }
 
 getLanternFish()
